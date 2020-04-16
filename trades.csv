@@ -1,0 +1,2 @@
+id,exchange,indicator,type,price_entry,price_close,amount,time
+4a1c82c2-4901-48da-8184-c6fae7c501cc,bitmex,tema400 < tema100 & BB%B >= 0 ,buy,6628.5,,1.0,2020-04-16 12:35:01.182571

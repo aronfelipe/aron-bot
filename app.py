@@ -100,12 +100,11 @@ class TradingApp:
                         buy = True
 
                     if buy:
-                        if tema400 + (tema400 * 0.09) < tema100 and counter >= 0:
+                        if (tema400 + (tema400 * 0.0009)) < tema100 and counter >= 0:
                             if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade(1)
-
                             self.trading_report.insert_trade("bitmex", "buy", "tema400 < tema100 & BB%B >= 0 ", str(value), '1.0')
                             buy = False
                             counter = 0
@@ -114,7 +113,7 @@ class TradingApp:
                         sell = True
 
                     if sell:
-                        if tema400 - (tema400 * 0.09) > tema100 and counter <= 0:
+                        if tema400 - (tema400 * 0.0009) > tema100 and counter <= 0:
                             if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 self.trading_report.close_trade(value)
@@ -143,8 +142,8 @@ class TradingApp:
             self.loop()
 
 
-chrome_path = r"/root/chromedriver"
-# chrome_path = r"/home/felipe/Documents/chromedriver"
+# chrome_path = r"/root/chromedriver"
+chrome_path = r"/home/felipe/Documents/chromedriver"
 
 url = "https://www.tradingview.com/chart/"
 
