@@ -50,16 +50,16 @@ class TradingApp:
                     value = self.make_float(self.trading_crawler.currency_value())
 
                     if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
-                            self.trading_report.df_trades[-1:]['price_close'].isnull().any():
-                        if value > float(self.trading_report.df_trades[-1:]['price_entry']) + (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.005):
+                           self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                        if value > float(self.trading_report.df_trades[-1:]['price_entry']) + (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
                             self.trading_report.close_trade(value)
                             self.trading_report.calculate_trade(1)
 
                     if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
-                            self.trading_report.df_trades[-1:]['price_close'].isnull().any():
-                        if value < float(self.trading_report.df_trades[-1:]['price_entry']) - (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.005):
-                            self.trading_report.close_trade(value)
-                            self.trading_report.calculate_trade(1)
+                           self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                        if value < float(self.trading_report.df_trades[-1:]['price_entry']) - (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
+                           self.trading_report.close_trade(value)
+                           self.trading_report.calculate_trade(1)
 
                     tema400 = self.make_float(self.trading_crawler.bot.find_xpath(
                         "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[3]/div[3]/div/div/div",
