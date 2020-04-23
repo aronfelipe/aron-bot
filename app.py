@@ -159,8 +159,8 @@ class TradingApp:
             self.loop()
 
 
-# chrome_path = r"/root/chromedriver"
-chrome_path = r"/home/felipe/Documents/chromedriver"
+chrome_path = r"/root/chromedriver"
+# chrome_path = r"/home/felipe/Documents/chromedriver"
 
 url = "https://www.tradingview.com/chart/"
 
