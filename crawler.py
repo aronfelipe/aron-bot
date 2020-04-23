@@ -80,23 +80,32 @@ class TradingCrawler:
             time.sleep(1)
         except Exception as e:
             print(e)
-            self.select_indicator(indicator)
+            print("AQUIIIII")
+            self.select_indicator(indicator, flush=True)
 
     def setting_indicator(self, number):
-        indicator_button = self.bot.find_xpath(
-            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[" + str(
-                number + 1) + "]/div[1]/div[2]", "find")
-        self.bot.driver.implicitly_wait(10)
-        ActionChains(self.bot.driver).move_to_element(indicator_button).perform()
-        self.bot.find_xpath(
-            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[" + str(
-                number + 1) + "]/div[2]/div/div[2]", "click")
+        try:
+            indicator_button = self.bot.find_xpath(
+                "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[" + str(
+                    number + 1) + "]/div[1]/div[2]", "find")
+            self.bot.driver.implicitly_wait(10)
+            ActionChains(self.bot.driver).move_to_element(indicator_button).perform()
+            self.bot.find_xpath(
+                "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[" + str(
+                    number + 1) + "]/div[2]/div/div[2]", "click")
+        except Exception as e:
+            print(e)
+            print("papaseting", flush=True)
 
     def ema_setting_configuration(self, length):
-        input_element_length = self.bot.find_xpath('//input[@value = "9"]', "find")
-        clear = self.bot.clear_text("//input[@value = '9']")
-        input_element_length.send_keys(length)
-        self.bot.find_xpath('/html/body/div[7]/div/div/div[1]/div/div[4]/div/span/button', "click")
+        try:
+            input_element_length = self.bot.find_xpath('//input[@value = "9"]', "find")
+            clear = self.bot.clear_text("//input[@value = '9']")
+            input_element_length.send_keys(length)
+            self.bot.find_xpath('/html/body/div[7]/div/div/div[1]/div/div[4]/div/span/button', "click")
+        except Exception as e:
+            print(e)
+            print("configyratui", flush=True)
 
     def ema_value(self, number):
         ema = self.bot.find_xpath(
