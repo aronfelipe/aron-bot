@@ -62,7 +62,7 @@ class TradingCrawler:
         self.bot.find_xpath("/html/body/div[2]/div[2]/div/div/div[1]/div[1]/div/div/div/div/div[2]/div/div/div/div",
                             "click")
         if _time == "1":
-            self.bot.find_xpath("/html/body/div[7]/div/span/div[1]/div/div/div/div[8]/div", "click")
+            self.bot.find_xpath("/html/body/div[7]/div/span/div[1]/div/div/div/div[8]/div/div[1]", "click")
         elif _time == "3":
             self.bot.find_xpath("/html/body/div[8]/div/span/div[1]/div/div/div/div[5]/div/div[1]/div", "click")
         elif _time == "5":
