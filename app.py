@@ -109,9 +109,15 @@ class TradingApp:
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade(1)
-                            self.trading_report.insert_trade("bitmex", "buy", "tema400 < tema100 & BB%B >= 0 ", str(value), '1.0')
-                            buy = False
-                            counter = 0
+
+                            if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
+                                    self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                                buy = False
+                                counter = 0
+                            else:
+                                self.trading_report.insert_trade("binance", "buy", "tema400 < tema100 & BB%B >= 0 ", str(value), '1.0')
+                                buy = False
+                                counter = 0
 
                     if sell:
                         if tema400 - (tema400 * 0.0009) > tema100 and counter <= 0:
@@ -119,10 +125,15 @@ class TradingApp:
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade(1)
-
-                            self.trading_report.insert_trade("bitmex", "sell", "tema400 > tema100 & BB%B <= 1", str(value), '1.0')
-                            sell = False
-                            counter = 0
+                            
+                            if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
+                                    self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                                sell = False
+                                counter = 0
+                            else:
+                                self.trading_report.insert_trade("binance", "sell", "tema400 > tema100 & BB%B <= 1", str(value), '1.0')
+                                sell = False
+                                counter = 0
 
                     compression_opts_trades = dict(method='zip',
                                                 archive_name='trades.csv')
