@@ -17,6 +17,10 @@ class TradingReport:
         data = {'id': [], 'trade_id': [], 'difference': []}
         self.df_closed = self.pd.DataFrame(data)
 
+    def create_df_indicator(self):
+        data = {'id': [], 'tema400': [], 'tema100': [], 'bb':[], 'counter':[], 'buy': [], 'sell':[], 'time':[]}
+        self.df_indicator = self.pd.DataFrame(data)
+
     def insert_trade(self, exchange, _type, indicator, price, amount):
         self.df_trades = self.df_trades.append({
             'id': str(uuid.uuid4()),
@@ -25,6 +29,18 @@ class TradingReport:
             'type': _type,
             'price_entry': price,
             'amount': amount,
+            'time': str(datetime.datetime.utcnow())
+        }, ignore_index=True)
+
+    def insert_indicator(self, tema400, tema100, bb, counter, buy, sell):
+        self.df_indicator = self.df_indicator.append({
+            'id': str(uuid.uuid4()),
+            'tema400': tema400,
+            'tema100': tema100,
+            'bb': bb,
+            'counter': counter,
+            'buy': buy,
+            'sell': sell,
             'time': str(datetime.datetime.utcnow())
         }, ignore_index=True)
 

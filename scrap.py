@@ -7,8 +7,8 @@ class ScrapScrap:
 
     def __init__(self, chrome_path, options=None):
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
+        # chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--no-sandbox")
         self.driver = webdriver.Chrome(chrome_path, chrome_options=chrome_options)
 
     def get(self, url):

@@ -13,7 +13,7 @@ class TradingApp:
         self.trading_crawler = TradingCrawler(chrome_path, url)
         self.trading_crawler.login_xpath("gubenites99@gmail.com", "plokiju12")
         # self.trading_crawler.login_xpath("aronakamoto@outlook.com", "420DevOps")
-        self.trading_crawler.select_currency("BITMEX:XBTUSD")
+        self.trading_crawler.select_currency("BINANCE:BTCUSDT")
         self.trading_crawler.select_time("1")
         self.trading_crawler.select_indicator("Triple EMA")
         self.trading_crawler.select_indicator("Triple EMA")
@@ -27,6 +27,7 @@ class TradingApp:
 
         self.trading_report.create_df_trades()
         self.trading_report.create_df_closed()
+        self.trading_report.create_df_indicator()
 
     def make_float(self, num):
         num = num.replace(' ', '').replace(',', '.').replace("−", "-")
@@ -36,7 +37,6 @@ class TradingApp:
             return 0
 
     def loop(self):
-
         try:
 
             buy = None
@@ -45,7 +45,7 @@ class TradingApp:
 
             while True:
 
-                if str(datetime.datetime.utcnow().second) == "1":
+                if str(datetime.datetime.utcnow().second) == "0":
 
                     value = self.make_float(self.trading_crawler.currency_value())
 
@@ -91,13 +91,17 @@ class TradingApp:
                     print("SELL", flush=True)
                     print(sell, flush=True)
 
+                    self.trading_report.insert_indicator(tema400, tema100, bb, counter, buy, sell)
+
                     if bb < 0:
-                        counter += 1
+                        counter = counter + 1
                     elif bb > 1:
-                        counter -= 1
+                        counter = counter - 1
 
                     if tema400 > tema100:
                         buy = True
+                    elif tema400 < tema100:
+                        sell = True
 
                     if buy:
                         if (tema400 + (tema400 * 0.0009)) < tema100 and counter >= 0:
@@ -108,9 +112,6 @@ class TradingApp:
                             self.trading_report.insert_trade("bitmex", "buy", "tema400 < tema100 & BB%B >= 0 ", str(value), '1.0')
                             buy = False
                             counter = 0
-
-                    if tema400 < tema100:
-                        sell = True
 
                     if sell:
                         if tema400 - (tema400 * 0.0009) > tema100 and counter <= 0:
@@ -127,11 +128,16 @@ class TradingApp:
                                                 archive_name='trades.csv')
                     compression_opts_closed = dict(method='zip',
                                                 archive_name='closed.csv')
+                    compression_opts_closed = dict(method='zip',
+                                                archive_name='indicator.csv')
 
                     self.trading_report.df_trades.to_csv('trades.zip', index=False,
                                                         compression=compression_opts_trades)
 
                     self.trading_report.df_closed.to_csv('closed.zip', index=False,
+                                                        compression=compression_opts_closed)
+
+                    self.trading_report.df_indicator.to_csv('indicator.zip', index=False,
                                                         compression=compression_opts_closed)
 
                     time.sleep(5)
@@ -142,8 +148,8 @@ class TradingApp:
             self.loop()
 
 
-chrome_path = r"/root/chromedriver"
-# chrome_path = r"/home/felipe/Documents/chromedriver"
+# chrome_path = r"/root/chromedriver"
+chrome_path = r"/home/felipe/Documents/chromedriver"
 
 url = "https://www.tradingview.com/chart/"
 

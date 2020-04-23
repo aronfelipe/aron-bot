@@ -73,14 +73,13 @@ class TradingCrawler:
             self.bot.find_xpath("/html/body/div[2]/div[2]/div/div/div[1]/div[1]/div/div/div/div/div[5]/div/div",
                                 "click")
             time.sleep(1)
-            self.bot.find_name("q", "send", indicator)
-            self.bot.find_name("q", "enter")
+            self.bot.find_xpath("//*[@placeholder='Search']", "send", indicator)
+            self.bot.find_xpath("//*[@placeholder='Search']", "enter")
             time.sleep(1)
             self.bot.find_xpath("//*[@title='" + indicator + "']", "click")
             time.sleep(1)
-            self.bot.find_xpath("/html/body/div[7]/div/div/div[3]", "click")
-            time.sleep(1)
-        except:
+        except Exception as e:
+            print(e)
             self.select_indicator(indicator)
 
     def setting_indicator(self, number):
