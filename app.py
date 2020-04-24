@@ -139,7 +139,7 @@ class TradingApp:
                                                 archive_name='trades.csv')
                     compression_opts_closed = dict(method='zip',
                                                 archive_name='closed.csv')
-                    compression_opts_closed = dict(method='zip',
+                    compression_opts_indicator = dict(method='zip',
                                                 archive_name='indicator.csv')
 
                     self.trading_report.df_trades.to_csv('trades.zip', index=False,
@@ -149,7 +149,7 @@ class TradingApp:
                                                         compression=compression_opts_closed)
 
                     self.trading_report.df_indicator.to_csv('indicator.zip', index=False,
-                                                        compression=compression_opts_closed)
+                                                        compression=compression_opts_indicator)
 
                     time.sleep(5)
 
