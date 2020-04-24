@@ -41,7 +41,7 @@ class TradingApp:
 
             buy = None
             sell = None
-            counter = 0
+            counter = -10
 
             while True:
 
