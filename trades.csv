@@ -1,3 +1,0 @@
-id,exchange,indicator,side,price,amount,time
-42d0bf04-7d9b-40d8-82e1-9b5b37172573,binance,tema400 < tema100 & BB%B >= 0 ,buy,9762.27,0.09867162043254284,2020-05-09 22:35:42.197443
-f7a6cb19-778f-4044-a9f4-a82236e8ca90,binance,tema400 > tema100 & BB%B <= 0 ,sell,9792.79,0.11973432408650858,2020-05-09 22:35:47.378568
