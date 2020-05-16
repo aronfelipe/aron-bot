@@ -8,11 +8,6 @@ class TradingApp:
 
     def __init__(self, chrome_path, url, fee, initial):
 
-        self.chrome_path = chrome_path
-        self.url = url
-        self.fee = fee
-        self.initial = initial
-
         self.trading_report = TradingReport(fee=fee)
 
         self.trading_crawler = TradingCrawler(chrome_path, url)
@@ -30,11 +25,13 @@ class TradingApp:
         self.trading_crawler.click_value()
 
         self.trading_report.create_df_trades()
-        self.trading_report.create_df_value()
+        self.trading_report.create_df_closed()
         self.trading_report.create_df_indicator()
+        self.trading_report.create_df_value()
+
+        self.initial = initial
 
     def make_float(self, num):
-        
         num = num.replace(' ', '').replace(',', '.').replace("−", "-")
         try:
             return float(num)
@@ -42,17 +39,18 @@ class TradingApp:
             return 0
 
     def loop(self):
-
         try:
-        
-            value = self.make_float(self.trading_crawler.currency_value())
-
-            self.currency = (self.initial / 2) * value
-            self.amount = self.initial / 2
 
             buy = None
             sell = None
             counter = 0
+
+            value = self.make_float(self.trading_crawler.currency_value())
+
+            self.currency = (self.initial / 2) * value
+            self.amount = self.initial / 2
+                                
+            self.trading_report.insert_value(self.amount, self.currency, value)
 
             while True:
 
@@ -60,22 +58,23 @@ class TradingApp:
 
                     value = self.make_float(self.trading_crawler.currency_value())
 
-                    if (self.trading_report.df_trades[-1:]['side'] == 'sell').any(): 
-                        if value > float(self.trading_report.df_trades[-1:]['price']) + (float(self.trading_report.df_trades[-1:]['price']) * 0.0075):
-                            self.trading_report.insert_buy("binance", "tema400 < tema100 & BB%B >= 0 ", str(value), (((20/100) * self.currency)/value))
-                            self.amount = self.amount + (((20/100) * self.currency)/value)
-                            self.currency = self.currency - ((20/100) * self.currency)
-                            self.trading_report.insert_value(["BTC", self.amount * value, self.amount, (100 * self.amount * value)/(self.amount * value) + self.currency],
-                            ["USDT", self.currency, self.currency, (100 * self.currency)/(self.amount * value) + self.currency])
+                    if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
+                           self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                        if value > float(self.trading_report.df_trades[-1:]['price_entry']) + (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
+                            self.amount = self.amount + float(self.trading_report.df_trades[-1:]['amount'])
+                            self.currency = self.currency - (float(self.trading_report.df_trades[-1:]['amount']) * value)
+                            self.trading_report.close_trade(value)
+                            self.trading_report.calculate_trade()
+                            self.trading_report.insert_value(self.amount, self.currency, value)
 
-                    if (self.trading_report.df_trades[-1:]['side'] == 'buy').any():
-                        if value > float(self.trading_report.df_trades[-1:]['price']) - (float(self.trading_report.df_trades[-1:]['price']) * 0.0075):
-                            self.trading_report.insert_sell("binance", "tema400 > tema100 & BB%B <= 0 ", str(value), ((20/100) * self.amount))
-                            self.currency = self.currency + ((20/100) * self.amount * value)
-                            self.amount = self.amount - ((20/100) * self.amount)
-                            self.trading_report.insert_value(["BTC", self.amount * value, self.amount, (100 * self.amount * value)/(self.amount * value) + self.currency],
-                            ["USDT", self.currency, self.currency, (100 * self.currency)/(self.amount * value) + self.currency])
-
+                    if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
+                           self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                        if value < float(self.trading_report.df_trades[-1:]['price_entry']) - (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
+                            self.amount = self.amount - float(self.trading_report.df_trades[-1:]['amount'])
+                            self.currency = self.currency + (float(self.trading_report.df_trades[-1:]['amount']) * value)
+                            self.trading_report.close_trade(value)
+                            self.trading_report.calculate_trade()
+                            self.trading_report.insert_value(self.amount, self.currency, value)
 
                     tema400 = self.make_float(self.trading_crawler.bot.find_xpath(
                         "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[3]/div[3]/div/div/div",
@@ -121,48 +120,64 @@ class TradingApp:
 
                     if buy:
                         if (tema400 + (tema400 * 0.0009)) < tema100 and counter >= 0:
-                            if (self.trading_report.df_trades[-1:]['side'] == 'sell').any() or self.trading_report.df_trades.empty:
-                                self.trading_report.insert_buy("binance", "tema400 < tema100 & BB%B >= 0 ", str(value), (((20/100) * self.currency)/value))
-                                self.amount = self.amount + (((20/100) * self.currency)/value)
-                                self.currency = self.currency - ((20/100) * self.currency)
-                                self.trading_report.insert_value(["BTC", self.amount * value, self.amount, (100 * self.amount * value)/((self.amount * value) + self.currency)],
-                                ["USDT", self.currency, self.currency, (100 * self.currency)/(self.amount * value) + self.currency])
+                            if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
+                                    self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                                
+                                self.trading_report.close_trade(value)
+                                self.trading_report.calculate_trade()
+
+                            if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
+                                    self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 buy = False
                                 counter = 0
-
-                            if (self.trading_report.df_trades[-1:]['side'] == 'buy').any():
+                            else:
+                                self.trading_report.insert_trade("binance", "buy", "tema400 < tema100 & BB%B >= 0 ", str(value), ((self.currency * 20/100)/value))
+                                self.amount = self.amount + ((self.currency * 20/100)/value)
+                                self.currency = self.currency - (self.currency * 20/100)
                                 buy = False
+                                counter = 0
+                                self.trading_report.insert_value(self.amount, self.currency, value)
+
 
                     if sell:
-                        if tema400 - (tema400 * 0.0009) > tema100 and counter <= 0 :
-                            if (self.trading_report.df_trades[-1:]['side'] == 'buy').any() or self.trading_report.df_trades.empty:
-                                self.trading_report.insert_sell("binance", "tema400 > tema100 & BB%B <= 0 ", str(value), ((20/100) * self.amount))
-                                self.currency = self.currency + ((20/100) * self.amount * value)
-                                self.amount = self.amount - ((20/100) * self.amount)
-                                self.trading_report.insert_value(["BTC", self.amount * value, self.amount, (100 * self.amount * value)/((self.amount * value) + self.currency)],
-                                ["USDT", self.currency, self.currency, (100 * self.currency)/(self.amount * value) + self.currency])
+                        if tema400 - (tema400 * 0.0009) > tema100 and counter <= 0:
+                            if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
+                                    self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                                self.trading_report.close_trade(value)
+                                self.trading_report.calculate_trade()
+                            
+                            if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
+                                    self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 sell = False
                                 counter = 0
-
-                            if (self.trading_report.df_trades[-1:]['side'] == 'sell').any():
+                            else:
+                                self.trading_report.insert_trade("binance", "sell", "tema400 > tema100 & BB%B <= 1", str(value), (self.amount * (20/100)))
+                                self.currency = self.currency + (self.amount * (20/100) * value)
+                                self.amount = self.amount - (self.amount * (20/100))
                                 sell = False
+                                counter = 0
+                                self.trading_report.insert_value(self.amount, self.currency, value)
 
                     compression_opts_trades = dict(method='zip',
                                                 archive_name='trades.csv')
-                    compression_opts_value = dict(method='zip',
-                                                archive_name='value.csv')
+                    compression_opts_closed = dict(method='zip',
+                                                archive_name='closed.csv')
                     compression_opts_indicator = dict(method='zip',
                                                 archive_name='indicator.csv')
+                    compression_opts_value = dict(method='zip',
+                                                archive_name='value.csv')
 
                     self.trading_report.df_trades.to_csv('trades.zip', index=False,
                                                         compression=compression_opts_trades)
 
-                    self.trading_report.df_value.to_csv('value.zip', index=False,
-                                                        compression=compression_opts_value)
+                    self.trading_report.df_closed.to_csv('closed.zip', index=False,
+                                                        compression=compression_opts_closed)
 
                     self.trading_report.df_indicator.to_csv('indicator.zip', index=False,
                                                         compression=compression_opts_indicator)
-
+                                                        
+                    self.trading_report.df_indicator.to_csv('value.zip', index=False,
+                                                        compression=compression_opts_value)
                     time.sleep(5)
 
         except Exception as e:

@@ -95,7 +95,7 @@ class TradingCrawler:
 
     def ema_setting_configuration(self, length):
         input_element_length = self.bot.find_xpath('//input[@value = "9"]', "find")
-        self.bot.clear_text("//input[@value = '9']")
+        clear = self.bot.clear_text("//input[@value = '9']")
         input_element_length.send_keys(length)
         self.bot.find_xpath('/html/body/div[7]/div/div/div[1]/div/div[4]/div/span/button', "click")
 

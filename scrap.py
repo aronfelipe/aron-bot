@@ -18,6 +18,9 @@ class ScrapScrap:
         self.driver.refresh()
         time.sleep(5)
 
+    def scroll_down(self):
+        self.driver.execute_script("window.scrollTo(0, Y)")
+
     def wait(self):
         time.sleep(20)
 
