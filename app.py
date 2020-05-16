@@ -125,6 +125,8 @@ class TradingApp:
                                 
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade()
+                                self.amount = self.amount + int(self.trading_report.df_trades[-1:]['amount'])
+                                self.currency = self.currency - (int(self.trading_report.df_trades[-1:]['amount']) * value) + (int(self.trading_report.df_closed[-1:]['difference']))
 
                             if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
@@ -145,7 +147,9 @@ class TradingApp:
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade()
-                            
+                                self.amount = self.amount - int(self.trading_report.df_trades[-1:]['amount'])
+                                self.currency = self.currency + (int(self.trading_report.df_trades[-1:]['amount']) * value) + (int(self.trading_report.df_closed[-1:]['difference']))
+
                             if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                                 sell = False
