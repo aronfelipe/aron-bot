@@ -21,6 +21,19 @@ class TradingReport:
         data = {'id': [], 'tema400': [], 'tema100': [], 'bb':[], 'counter':[], 'buy': [], 'sell':[], 'time':[]}
         self.df_indicator = self.pd.DataFrame(data)
 
+    def create_df_value(self):
+        data = {'id': [], 'amount': [], 'currency': [], 'total':[], "time": []}
+        self.df_value = self.pd.DataFrame(data)
+
+    def insert_value(self, amount, currency, value):
+        self.df_value = self.df_value.append({
+            'id': str(uuid.uuid4()),
+            'amount': amount,
+            'currency': currency,
+            'total': currency + (amount * value),
+            'time': str(datetime.datetime.utcnow())
+        }, ignore_index=True)
+
     def insert_trade(self, exchange, _type, indicator, price, amount):
         self.df_trades = self.df_trades.append({
             'id': str(uuid.uuid4()),
@@ -47,18 +60,18 @@ class TradingReport:
     def close_trade(self, price):
         self.df_trades.loc[self.df_trades.index[-1], 'price_close'] = price
 
-    def calculate_trade(self, leverage):
+    def calculate_trade(self):
         if (self.df_trades[-1:]['type'] == 'buy').any():
-            diff = (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * leverage) - (
-                        float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * leverage)
+            diff = (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount'])) - (
+                        float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']))
             diff_minus_fee = diff - (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * self.fee) - (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * self.fee)
 
             self.df_closed = self.df_closed.append({'id': str(uuid.uuid4()),
                                                     'trade_id': self.df_trades[-1:]['id'],
                                                     'difference': str(diff_minus_fee)}, ignore_index=True)
         else:
-            diff = (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * leverage) - (
-                        float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * leverage)
+            diff = (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount'])) - (
+                        float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']))
             diff_minus_fee = diff - (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * self.fee) - (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * self.fee)
             self.df_closed = self.df_closed.append({'id': str(uuid.uuid4()),
                                                     'trade_id': self.df_trades[-1:]['id'],
