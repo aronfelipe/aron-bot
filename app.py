@@ -180,7 +180,7 @@ class TradingApp:
                     self.trading_report.df_indicator.to_csv('indicator.zip', index=False,
                                                         compression=compression_opts_indicator)
                                                         
-                    self.trading_report.df_indicator.to_csv('value.zip', index=False,
+                    self.trading_report.df_value.to_csv('value.zip', index=False,
                                                         compression=compression_opts_value)
                     time.sleep(5)
 
