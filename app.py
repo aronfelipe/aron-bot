@@ -50,7 +50,7 @@ class TradingApp:
             self.currency = (self.initial / 2) * value
             self.amount = self.initial / 2
                                 
-            self.trading_report.insert_value(self.amount, self.currency, value)
+            self.trading_report.insert_value(self.amount, self.currency, value, "initial")
 
             while True:
 
@@ -61,20 +61,22 @@ class TradingApp:
                     if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
                            self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                         if value > float(self.trading_report.df_trades[-1:]['price_entry']) + (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
-                            self.amount = self.amount + float(self.trading_report.df_trades[-1:]['amount'])
-                            self.currency = self.currency - (float(self.trading_report.df_trades[-1:]['amount']) * value)
+
                             self.trading_report.close_trade(value)
                             self.trading_report.calculate_trade()
-                            self.trading_report.insert_value(self.amount, self.currency, value)
+                            self.amount = self.amount + float(self.trading_report.df_trades[-1:]['amount'])
+                            self.currency = self.currency - (float(self.trading_report.df_trades[-1:]['amount']) * value) - (int(self.trading_report.df_closed[-1:]['fee']))
+                            self.trading_report.insert_value(self.amount, self.currency, value, "stop")
 
                     if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
                            self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                         if value < float(self.trading_report.df_trades[-1:]['price_entry']) - (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
-                            self.amount = self.amount - float(self.trading_report.df_trades[-1:]['amount'])
-                            self.currency = self.currency + (float(self.trading_report.df_trades[-1:]['amount']) * value)
+
                             self.trading_report.close_trade(value)
                             self.trading_report.calculate_trade()
-                            self.trading_report.insert_value(self.amount, self.currency, value)
+                            self.amount = self.amount - float(self.trading_report.df_trades[-1:]['amount'])
+                            self.currency = self.currency + (float(self.trading_report.df_trades[-1:]['amount']) * value) - (int(self.trading_report.df_closed[-1:]['fee']))
+                            self.trading_report.insert_value(self.amount, self.currency, value, "stop")
 
                     tema400 = self.make_float(self.trading_crawler.bot.find_xpath(
                         "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[3]/div[3]/div/div/div",
@@ -126,7 +128,8 @@ class TradingApp:
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade()
                                 self.amount = self.amount + int(self.trading_report.df_trades[-1:]['amount'])
-                                self.currency = self.currency - (int(self.trading_report.df_trades[-1:]['amount']) * value) + (int(self.trading_report.df_closed[-1:]['difference']))
+                                self.currency = self.currency - (int(self.trading_report.df_trades[-1:]['amount']) * value) + (int(self.trading_report.df_closed[-1:]['fee']))
+                                self.trading_report.insert_value(self.amount, self.currency, value, "close_sell")
 
                             if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
@@ -138,7 +141,7 @@ class TradingApp:
                                 self.currency = self.currency - (self.currency * 20/100)
                                 buy = False
                                 counter = 0
-                                self.trading_report.insert_value(self.amount, self.currency, value)
+                                self.trading_report.insert_value(self.amount, self.currency, value, "buy")
 
 
                     if sell:
@@ -148,7 +151,8 @@ class TradingApp:
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade()
                                 self.amount = self.amount - int(self.trading_report.df_trades[-1:]['amount'])
-                                self.currency = self.currency + (int(self.trading_report.df_trades[-1:]['amount']) * value) + (int(self.trading_report.df_closed[-1:]['difference']))
+                                self.currency = self.currency + (int(self.trading_report.df_trades[-1:]['amount']) * value) + (int(self.trading_report.df_closed[-1:]['fee']))
+                                self.trading_report.insert_value(self.amount, self.currency, value, "close_buy")
 
                             if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
@@ -160,7 +164,7 @@ class TradingApp:
                                 self.amount = self.amount - (self.amount * (20/100))
                                 sell = False
                                 counter = 0
-                                self.trading_report.insert_value(self.amount, self.currency, value)
+                                self.trading_report.insert_value(self.amount, self.currency, value, "sell")
 
                     compression_opts_trades = dict(method='zip',
                                                 archive_name='trades.csv')
