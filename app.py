@@ -190,8 +190,6 @@ class TradingApp:
                 time.sleep(5)
 
         except Exception as e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            print(exc_tb.tb_lineno)
             print(e, flush=True)
             time.sleep(30)
             self.loop()
