@@ -25,12 +25,13 @@ class TradingReport:
         data = {'id': [], 'amount': [], 'currency': [], 'total':[], "time": []}
         self.df_value = self.pd.DataFrame(data)
 
-    def insert_value(self, amount, currency, value):
+    def insert_value(self, amount, currency, value, reason):
         self.df_value = self.df_value.append({
             'id': str(uuid.uuid4()),
             'amount': amount,
             'currency': currency,
             'total': currency + (amount * value),
+            'reason': reason,
             'time': str(datetime.datetime.utcnow())
         }, ignore_index=True)
 
