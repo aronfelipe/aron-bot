@@ -62,7 +62,8 @@ class TradingCrawler:
         self.bot.find_xpath("/html/body/div[2]/div[2]/div/div/div[1]/div[1]/div/div/div/div/div[2]/div/div/div/div",
                             "click")
         if _time == "1":
-            self.bot.find_xpath("/html/body/div[7]/div/span/div[1]/div/div/div/div[8]/div", "click")
+            # self.bot.find_xpath("//*[contains(text(), '1 minute')]", "click")
+            self.bot.find_xpath("/html/body/div[8]/div[1]/span/div[1]/div/div/div/div[8]/div", "click")
         elif _time == "3":
             self.bot.find_xpath("/html/body/div[8]/div/span/div[1]/div/div/div/div[5]/div/div[1]/div", "click")
         elif _time == "5":
@@ -77,7 +78,7 @@ class TradingCrawler:
             time.sleep(1)
             self.bot.find_xpath("//*[@title='" + indicator + "']", "click")
             time.sleep(1)
-            self.bot.find_xpath("/html/body/div[7]/div/div/div[1]/div/div[1]/span", "click")
+            self.bot.find_xpath("/html/body/div[8]/div/div/div[1]/div/div[1]/span", "click")
 
         except Exception as e:
             print(e)
@@ -95,9 +96,9 @@ class TradingCrawler:
 
     def ema_setting_configuration(self, length):
         input_element_length = self.bot.find_xpath('//input[@value = "9"]', "find")
-        clear = self.bot.clear_text("//input[@value = '9']")
+        self.bot.clear_text("//input[@value = '9']")
         input_element_length.send_keys(length)
-        self.bot.find_xpath('/html/body/div[7]/div/div/div[1]/div/div[4]/div/span/button', "click")
+        self.bot.find_xpath('/html/body/div[8]/div/div/div[1]/div/div[4]/div[2]/span/button', "click")
 
     def ema_value(self, number):
         ema = self.bot.find_xpath(

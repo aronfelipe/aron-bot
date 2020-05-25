@@ -129,7 +129,7 @@ class TradingApp:
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade()
                                 self.amount = self.amount + float(self.trading_report.df_trades[-1:]['amount'])
-                                self.currency = self.currency - (float(self.trading_report.df_trades[-1:]['amount']) * value) + (float(self.trading_report.df_closed[-1:]['fee']))
+                                self.currency = self.currency - (float(self.trading_report.df_trades[-1:]['amount']) * value) - (float(self.trading_report.df_closed[-1:]['fee']))
                                 self.trading_report.insert_value(self.amount, self.currency, value, "close_sell")
 
                             if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \

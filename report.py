@@ -14,7 +14,7 @@ class TradingReport:
         self.df_trades = self.pd.DataFrame(data)
 
     def create_df_closed(self):
-        data = {'id': [], 'trade_id': [], 'difference': []}
+        data = {'id': [], 'trade_id': [], 'difference': [], 'fee': []}
         self.df_closed = self.pd.DataFrame(data)
 
     def create_df_indicator(self):
@@ -65,15 +65,24 @@ class TradingReport:
         if (self.df_trades[-1:]['type'] == 'buy').any():
             diff = (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount'])) - (
                         float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']))
-            diff_minus_fee = diff - (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * self.fee) - (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * self.fee)
+
+            fee = (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * self.fee) + (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * self.fee)
+            
+            diff_minus_fee = diff - fee
 
             self.df_closed = self.df_closed.append({'id': str(uuid.uuid4()),
                                                     'trade_id': self.df_trades[-1:]['id'],
-                                                    'difference': str(diff_minus_fee)}, ignore_index=True)
+                                                    'difference': str(diff_minus_fee),
+                                                    'fee': str(fee) }, ignore_index=True)
         else:
             diff = (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount'])) - (
                         float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']))
-            diff_minus_fee = diff - (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * self.fee) - (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * self.fee)
+            
+            fee = (float(self.df_trades[-1:]['price_close']) * float(self.df_trades[-1:]['amount']) * self.fee) + (float(self.df_trades[-1:]['price_entry']) * float(self.df_trades[-1:]['amount']) * self.fee)
+
+            diff_minus_fee = diff - fee
+
             self.df_closed = self.df_closed.append({'id': str(uuid.uuid4()),
                                                     'trade_id': self.df_trades[-1:]['id'],
-                                                    'difference': str(diff_minus_fee)}, ignore_index=True)
+                                                    'difference': str(diff_minus_fee),
+                                                    'fee': str(fee)}, ignore_index=True)
