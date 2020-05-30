@@ -3,7 +3,6 @@ from report import TradingReport
 
 import time
 import datetime
-import sys
 
 class TradingApp:
 
@@ -60,19 +59,18 @@ class TradingApp:
                     value = self.make_float(self.trading_crawler.currency_value())
 
                     if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
-                            self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                           self.trading_report.df_trades[-1:]['price_close'].isnull().any():
                         if value > float(self.trading_report.df_trades[-1:]['price_entry']) + (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
-
                             self.trading_report.close_trade(value)
                             self.trading_report.calculate_trade()
                             self.amount = self.amount + float(self.trading_report.df_trades[-1:]['amount'])
                             self.currency = self.currency - (float(self.trading_report.df_trades[-1:]['amount']) * value) - (float(self.trading_report.df_closed[-1:]['fee']))
                             self.trading_report.insert_value(self.amount, self.currency, value, "stop")
 
-                    if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
-                            self.trading_report.df_trades[-1:]['price_close'].isnull().any():
-                        if value < float(self.trading_report.df_trades[-1:]['price_entry']) - (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
 
+                    if (self.trading_report.df_trades[-1:]['type'] == 'buy').any() and \
+                           self.trading_report.df_trades[-1:]['price_close'].isnull().any():
+                        if value < float(self.trading_report.df_trades[-1:]['price_entry']) - (float(self.trading_report.df_trades[-1:]['price_entry']) * 0.0075):
                             self.trading_report.close_trade(value)
                             self.trading_report.calculate_trade()
                             self.amount = self.amount - float(self.trading_report.df_trades[-1:]['amount'])
@@ -80,13 +78,13 @@ class TradingApp:
                             self.trading_report.insert_value(self.amount, self.currency, value, "stop")
 
                     tema400 = self.make_float(self.trading_crawler.bot.find_xpath(
-                        "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[3]/div[3]/div/div/div",
+                        "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[2]/div[2]/div[3]/div[3]/div/div/div",                        
                         "text"))
                     tema100 = self.make_float(self.trading_crawler.bot.find_xpath(
-                        "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[4]/div[3]/div/div/div",
+                        "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[2]/div[2]/div[4]/div[3]/div/div/div",
                         "text"))
                     bb = self.make_float(self.trading_crawler.bot.find_xpath(
-                        "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[3]/td[2]/div/div[2]/div/div[2]/div[2]/div[3]/div/div/div",
+                        "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[3]/td[2]/div/div[1]/div/div[2]/div[2]/div[3]/div/div/div",
                         "text"))
 
                     if value == 0 or tema400 == 0 or tema100 == 0:
@@ -125,7 +123,6 @@ class TradingApp:
                         if (tema400 + (tema400 * 0.0009)) < tema100 and counter >= 0:
                             if (self.trading_report.df_trades[-1:]['type'] == 'sell').any() and \
                                     self.trading_report.df_trades[-1:]['price_close'].isnull().any():
-                                
                                 self.trading_report.close_trade(value)
                                 self.trading_report.calculate_trade()
                                 self.amount = self.amount + float(self.trading_report.df_trades[-1:]['amount'])
@@ -167,6 +164,7 @@ class TradingApp:
                                 counter = 0
                                 self.trading_report.insert_value(self.amount, self.currency, value, "sell")
 
+
                     compression_opts_trades = dict(method='zip',
                                                 archive_name='trades.csv')
                     compression_opts_closed = dict(method='zip',
@@ -187,6 +185,7 @@ class TradingApp:
                                                         
                     self.trading_report.df_value.to_csv('value.zip', index=False,
                                                         compression=compression_opts_value)
+
                     time.sleep(5)
 
         except Exception as e:
@@ -201,12 +200,12 @@ chrome_path = r"/root/chromedriver"
 url = "https://www.tradingview.com/chart/"
 
 
-def initialize_bot(chrome_path, url, fee, initial):
+def initialize_bot(chrome_path, url, fee):
     try:
-        app = TradingApp(chrome_path=chrome_path, url=url, fee=fee, initial=initial)
+        app = TradingApp(chrome_path=chrome_path, url=url, fee=fee, initial=1)
         app.loop()
     except Exception as e:
         print(e, flush=True)
-        initialize_bot(chrome_path, url, fee, initial)
+        initialize_bot(chrome_path, url, fee)
 
-initialize_bot(chrome_path, url, 0.00075, 1)
+initialize_bot(chrome_path, url, 0.00075)
