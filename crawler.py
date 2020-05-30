@@ -85,14 +85,18 @@ class TradingCrawler:
             self.select_indicator(indicator)
 
     def setting_indicator(self, number):
-        indicator_button = self.bot.find_xpath(
-            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[" + str(
-                number + 1) + "]/div[1]/div[2]", "find")
-        self.bot.driver.implicitly_wait(10)
-        ActionChains(self.bot.driver).move_to_element(indicator_button).perform()
-        self.bot.find_xpath(
-            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[" + str(
-                number + 1) + "]/div[2]/div/div[2]", "click")
+        try:
+
+            indicator_button = self.bot.find_xpath(
+                "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[2]/div[2]/div[" + str(
+                    number + 1) + "]/div[1]", "find")
+            self.bot.driver.implicitly_wait(10)
+            ActionChains(self.bot.driver).move_to_element(indicator_button).perform()
+            self.bot.find_xpath(
+                "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[2]/div[2]/div[" + str(
+                    number + 1) + "]/div[2]/div/div[2]", "click")
+        except Exception as e:
+            print(e)
 
     def ema_setting_configuration(self, length):
         input_element_length = self.bot.find_xpath('//input[@value = "9"]', "find")
@@ -102,8 +106,8 @@ class TradingCrawler:
 
     def ema_value(self, number):
         ema = self.bot.find_xpath(
-            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[2]/div[2]/div[" + str(
-                2 + number) + "]/div[3]/div/div/div", "text")
+            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[2]/div[2]/div[" + str(
+                1 + number) + "]/div[3]/div/div/div", "text")
         return ema
 
     def click_graph(self):
@@ -114,7 +118,7 @@ class TradingCrawler:
 
     def currency_value(self):
         value = self.bot.find_xpath(
-            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[2]/div[1]/div[2]/div/div[4]/div[2]",
+            "/html/body/div[2]/div[1]/div[3]/div[1]/div/table/tr[1]/td[2]/div/div[1]/div[1]/div[2]/div/div[5]/div[2]",
             "text")
         return value
 
